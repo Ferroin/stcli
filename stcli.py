@@ -103,6 +103,7 @@ The following commands are supported:
     scan: Trigger an immediate scan of a folder.
     setup: Automatically detect the configuration for the
            local system.
+    status: Get general status information from Syncthing.
 
 For more information on a given command, use:
 {0} help <command>'''.format(sys.argv[0])
