@@ -1,5 +1,5 @@
-# stcli: A CLI frontend for Sycnthing #
-stcli is a Python based CLI frntend for the Syncthing REST API.  It allows
+# stcli: A CLI front-end for Sycnthing #
+stcli is a Python based CLI front-end for the Syncthing REST API.  It allows
 performing the various things that can't be done simply by editing the
 configuration or manipulating the filesystem, such triggering scans and
 getting status information.
@@ -27,7 +27,7 @@ auto-generate the configuration for stcli.
 
 ## Supported REST Calls ##
 stcli currently provides support for the following REST API calls:
-* /rest/db/scan: Including support for rescanning individual folders, and specific
+* /rest/db/scan: Including support for re-scanning individual folders, and specific
   sub-paths.
 * /rest/db/override
 
@@ -41,14 +41,14 @@ For various reasons, I do not plan to add support for the following calls:
   GUI doesn't use this at all, so there is no reason that you should need
   it unless you're doing very complicated things, and therefore should
   write your own code to handle it.
-* /rest/svc/*: None of the miscallaneous service endpoints are really
+* /rest/svc/*: None of the miscellaneous service endpoints are really
   intended for end-user consumption.
-* /rest/db/igores: Ignores are much more easily edited using a plain
+* /rest/db/ignores: Ignores are much more easily edited using a plain
   text editor.  As such, they're beyond the scope of stcli.
 * /rest/db/browse: This is really a debugging endpoint and nothing more.
 * /rest/system/debug: Same as above.
 * /rest/system/{shutdown,restart}: These should be handled via the
-  syncthing binary itself or your system's service manager.
+  Syncthing binary itself or your system's service manager.
 * /rest/system/version: Use `syncthing --version` instead.
 
 If you want to add support for them, you're going to have to both provide
