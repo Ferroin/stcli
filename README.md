@@ -30,8 +30,13 @@ stcli currently provides support for the following REST API calls:
 * /rest/db/scan: Including support for re-scanning individual folders, and specific
   sub-paths.
 * /rest/db/override
+* /rest/system/status
 
 I plan on adding support for other calls as time permits.
+
+If a REST call returns any JSON data, it will be reformatted so that
+it's actually readable by a real person (keys will be sorted, and line
+breaks added with 2 spaces for each level of indentation).
 
 ## Unsupported REST Calls ##
 For various reasons, I do not plan to add support for the following calls:

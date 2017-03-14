@@ -56,6 +56,16 @@ def get_connection(addr, https):
     else:
         return http.client.HTTPConnection(host)
 
+def reform_json(data):
+    '''Reformat JSON so that it looks nice.
+
+       This converts to a string if needed, then returns the result
+       of loading then dumping the data with sane human readable
+       formatting.'''
+    if type(data) == type(bytes()):
+        data = data.decode()
+    return json.dumps(json.loads(data), sort_keys=True, indent=2)
+
 def rest_call(connection, uri, key, reqtype, data):
     '''Make a Syncthing REST API call.
 
@@ -148,6 +158,15 @@ It takes one mandatory parameter:
           Syncthing's internal folder ID.'''.format(sys.argv[0])
         )
         return 0
+    elif argv[0] == 'status':
+        print(
+        '''{0} status
+
+Usage
+{0} status
+
+Returns the JSON encoded global status of Syncthing.'''.format(sys.argv[0])
+        )
     else:
         print('Unknown command {0}.'.format(args[0]))
         return 1
@@ -171,10 +190,7 @@ def setup(args):
     apikey = root.find('gui').find('apikey').text
     addr = root.find('gui').find('address').text
     https = root.find('gui').attrib['tls']
-    if https == 'true':
-        https = True
-    else:
-        https = False
+    https = bool(https == 'true')
     config = dict({'addr': addr, 'apikey': apikey, 'https': https})
     with open(get_config_path(), 'w') as configfile:
         json.dump(config, configfile)
@@ -213,22 +229,42 @@ def override(args):
         print(result[1])
         return 1
 
+def status(args):
+    '''Return the overal status from Syncthing.'''
+    with open(get_config_path(), 'r') as configfile:
+        config = json.load(configfile)
+    if len(args) != 0:
+        print('Incorrect number of arguments for status command.')
+        return 1
+    uri = '/rest/system/status'
+    result = rest_call(get_connection(config['addr'], config['https']), uri, config['apikey'], 'GET', None)
+    if result[0] == 200:
+        print(reform_json(result[1]))
+        return 0
+    else:
+        print('Failed to retrieve status information.')
+        print(result[1])
+        return 1
+
 def main():
     '''The primary body of the program.'''
     if len(sys.argv) == 0:
-        return clihelp([])
+        result = clihelp([])
     elif sys.argv[1] == 'help':
-        return clihelp(sys.argv[2:])
+        result = clihelp(sys.argv[2:])
     elif sys.argv[1] == 'version':
-        return version()
+        result = version()
     elif sys.argv[1] == 'setup':
-        return setup(sys.argv[2:])
+        result = setup(sys.argv[2:])
     elif sys.argv[1] == 'scan':
-        return scan(sys.argv[2:])
+        result = scan(sys.argv[2:])
     elif sys.argv[1] == 'override':
-        return override(sys.argv[2:])
+        result = override(sys.argv[2:])
+    elif sys.argv[1] == 'status':
+        result = status(sys.argv[2:])
     else:
-        return clihelp([])
+        result = clihelp([])
+    return result
 
 if __name__ == '__main__':
     sys.exit(main())
