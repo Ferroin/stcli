@@ -62,7 +62,7 @@ def reform_json(data):
        This converts to a string if needed, then returns the result
        of loading then dumping the data with sane human readable
        formatting.'''
-    if type(data) == type(bytes()):
+    if isinstance(data, bytes):
         data = data.decode()
     return json.dumps(json.loads(data), sort_keys=True, indent=2)
 
@@ -159,7 +159,7 @@ It takes one mandatory parameter:
           Syncthing's internal folder ID.'''.format(sys.argv[0])
         )
         return 0
-    elif argv[0] == 'status':
+    elif args[0] == 'status':
         print(
         '''{0} status
 
