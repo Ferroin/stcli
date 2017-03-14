@@ -196,10 +196,8 @@ def setup(args):
         json.dump(config, configfile)
     return 0
 
-def scan(args):
+def scan(args, config):
     '''Tell Syncthing to rescan folders.'''
-    with open(get_config_path(), 'r') as configfile:
-        config = json.load(configfile)
     uri = '/rest/db/scan'
     if len(args) > 0:
         uri += '?folder=' + args[0]
@@ -213,10 +211,8 @@ def scan(args):
         print(result[1])
         return 1
 
-def override(args):
+def override(args, config):
     '''Override remote changes to a send-only folder.'''
-    with open(get_config_path(), 'r') as configfile:
-        config = json.load(configfile)
     if len(args) != 1:
         print('Incorrect number of arguments for override command.')
         return 1
@@ -229,10 +225,8 @@ def override(args):
         print(result[1])
         return 1
 
-def status(args):
+def status(args, config):
     '''Return the overal status from Syncthing.'''
-    with open(get_config_path(), 'r') as configfile:
-        config = json.load(configfile)
     if len(args) != 0:
         print('Incorrect number of arguments for status command.')
         return 1
@@ -248,22 +242,31 @@ def status(args):
 
 def main():
     '''The primary body of the program.'''
-    if len(sys.argv) == 0:
-        result = clihelp([])
-    elif sys.argv[1] == 'help':
-        result = clihelp(sys.argv[2:])
-    elif sys.argv[1] == 'version':
-        result = version()
-    elif sys.argv[1] == 'setup':
-        result = setup(sys.argv[2:])
-    elif sys.argv[1] == 'scan':
-        result = scan(sys.argv[2:])
-    elif sys.argv[1] == 'override':
-        result = override(sys.argv[2:])
-    elif sys.argv[1] == 'status':
-        result = status(sys.argv[2:])
-    else:
-        result = clihelp([])
+    try:
+        with open(get_config_path(), 'r') as configfile:
+            config = json.load(configfile)
+    except:
+        pass
+    try:
+        if len(sys.argv) == 1:
+            result = clihelp([])
+        elif sys.argv[1] == 'help':
+            result = clihelp(sys.argv[2:])
+        elif sys.argv[1] == 'version':
+            result = version()
+        elif sys.argv[1] == 'setup':
+            result = setup(sys.argv[2:])
+        elif sys.argv[1] == 'scan':
+            result = scan(sys.argv[2:], config)
+        elif sys.argv[1] == 'override':
+            result = override(sys.argv[2:], config)
+        elif sys.argv[1] == 'status':
+            result = status(sys.argv[2:], config)
+        else:
+            result = clihelp([])
+    except NameError:
+        print('Unable to find configuration, please run {0} setup.'.format(sys.argv[0]))
+        return 1
     return result
 
 if __name__ == '__main__':
