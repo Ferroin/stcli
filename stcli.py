@@ -177,7 +177,8 @@ Usage:
 
 Return a JSON encoded list of error messages from Syncthing.
 If the 'clear' argument is specified, tell Syncthing to clear the list
-instead. '''.format(sys.argv(0)
+instead. '''.format(sys.argv(0))
+        )
     else:
         print('Unknown command {0}.'.format(args[0]))
         return 1
