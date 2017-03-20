@@ -78,7 +78,7 @@ def rest_call(config, uri, reqtype, data):
        Returns a tuple of (returncode, data).'''
     connection = get_connection(config['addr'], config['https'])
     connection.putrequest(reqtype, uri)
-    connection.putheader('X-API-Key', config['key'])
+    connection.putheader('X-API-Key', config['apikey'])
     connection.endheaders(message_body=data)
     with connection.getresponse() as resp:
         return (resp.status, resp.read())
