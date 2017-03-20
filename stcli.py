@@ -66,19 +66,19 @@ def reform_json(data):
         data = data.decode()
     return json.dumps(json.loads(data), sort_keys=True, indent=2)
 
-def rest_call(connection, uri, key, reqtype, data):
+def rest_call(config, uri, reqtype, data):
     '''Make a Syncthing REST API call.
 
        This takes five parameters:
-       'connection' is an established http.client.HTTPConnection object.
+       'config' is the config object to base the connection off of.
        'uri' is the request URI (the REST method to call).
-       'key' is the Syncthing API Key to use.
        'reqtype' is the request type (the HTTP method to use).
        'data' is the request body.  It may be None to send no request body.
 
        Returns a tuple of (returncode, data).'''
+    connection = get_connection(config['addr'], config['https'])
     connection.putrequest(reqtype, uri)
-    connection.putheader('X-API-Key', key)
+    connection.putheader('X-API-Key', config['key'])
     connection.endheaders(message_body=data)
     with connection.getresponse() as resp:
         return (resp.status, resp.read())
@@ -204,7 +204,7 @@ def scan(args, config):
         uri += '?folder=' + args[0]
         if len(args) > 1:
             uri += '&sub=' + args[1]
-    result = rest_call(get_connection(config['addr'], config['https']), uri, config['apikey'], 'POST', None)
+    result = rest_call(config, uri, 'POST', None)
     if result[0] == 200:
         return 0
     else:
@@ -218,7 +218,7 @@ def override(args, config):
         print('Incorrect number of arguments for override command.')
         return 1
     uri = '/rest/db/override?folder=' + args[0]
-    result = rest_call(get_connection(config['addr'], config['https']), uri, config['apikey'], 'POST', None)
+    result = rest_call(config, uri, 'POST', None)
     if result[0] == 200:
         return 0
     else:
@@ -232,7 +232,7 @@ def status(args, config):
         print('Incorrect number of arguments for status command.')
         return 1
     uri = '/rest/system/status'
-    result = rest_call(get_connection(config['addr'], config['https']), uri, config['apikey'], 'GET', None)
+    result = rest_call(config, uri, 'GET', None)
     if result[0] == 200:
         print(reform_json(result[1]))
         return 0
