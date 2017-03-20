@@ -31,6 +31,8 @@ stcli currently provides support for the following REST API calls:
   sub-paths.
 * /rest/db/override
 * /rest/system/status
+* /rest/system/error
+* /rest/system/error/clear
 
 I plan on adding support for other calls as time permits.
 

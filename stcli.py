@@ -163,11 +163,21 @@ It takes one mandatory parameter:
         print(
         '''{0} status
 
-Usage
+Usage:
 {0} status
 
 Returns the JSON encoded global status of Syncthing.'''.format(sys.argv[0])
         )
+    elif args[0] == 'error':
+        print(
+        '''{0} error
+
+Usage:
+{0} error [clear]
+
+Return a JSON encoded list of error messages from Syncthing.
+If the 'clear' argument is specified, tell Syncthing to clear the list
+instead. '''.format(sys.argv(0)
     else:
         print('Unknown command {0}.'.format(args[0]))
         return 1
@@ -241,6 +251,33 @@ def status(args, config):
         print(result[1])
         return 1
 
+def error(args, config):
+    '''Handle the /rest/system/error endpoint.'''
+    if len(args) == 0:
+        uri = '/rest/system/error'
+        result = rest_call(config, uri, 'GET', None)
+        if result[0] == 200:
+            print(reform_json(result[1]))
+            return 0
+        else:
+            print('Failed to retrieve error information.')
+            print(result[1])
+            return 1
+    elif len(args) == 1:
+        if args[0] == 'clear':
+            uri = '/rest/system/error/clear'
+            result = rest_call(config, uri, 'POST', None)
+            if result[0] == 200:
+                return 0
+            else:
+                print('Clearing errors failed.')
+                print(result[1])
+                return 1
+    else:
+        print('Incorrect number of arguments for status command.')
+        return 1
+
+
 def main():
     '''The primary body of the program.'''
     try:
@@ -263,6 +300,8 @@ def main():
             result = override(sys.argv[2:], config)
         elif sys.argv[1] == 'status':
             result = status(sys.argv[2:], config)
+        elif sys.argv[1] == 'error':
+            result = error(sys.argv[2:], config)
         else:
             result = clihelp([])
     except NameError:
